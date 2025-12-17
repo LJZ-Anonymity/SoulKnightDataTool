@@ -6,7 +6,9 @@
 
 ## 项目简介
 
-SoulKnightDataTool 是一个专为元气骑士玩家设计的 Windows 批处理工具，用于方便地备份和还原游戏数据。通过 Android Debug Bridge (ADB)，该工具可以安全地备份和还原游戏存档，支持多版本游戏包名配置，并提供友好的命令行界面。
+SoulKnightDataTool 是一个专为元气骑士玩家设计的 Windows 批处理工具，用于方便地备份和还原游戏数据。
+
+通过 Android Debug Bridge (ADB)，该工具可以安全地备份和还原游戏存档，支持多版本游戏包名配置，并提供友好的命令行界面。
 
 ## 主要功能
 
@@ -26,7 +28,7 @@ SoulKnightDataTool 是一个专为元气骑士玩家设计的 Windows 批处理�
 
 ## 安装方法
 
-1. 下载或克隆本仓库
+1. 克隆本仓库或下载Releases
 2. 确保已安装所需的 USB 驱动（见下方说明）
 3. 运行 `SoulKnightDataTool.bat` 启动工具
 
@@ -169,6 +171,7 @@ SoulKnightDataTool 是一个专为元气骑士玩家设计的 Windows 批处理�
 ```text
 SoulKnightDataTool/
 ├── SoulKnightDataTool.bat       # 主程序文件，运行此文件启动工具
+├── LICENSE                      # 开源协议
 ├── README.md                    # 项目说明文档
 │
 ├── ADB Files/                   # ADB 工具文件目录
@@ -186,31 +189,6 @@ SoulKnightDataTool/
 ```
 
 > ⚠️ **注意**：`ADB Files` 文件夹中的文件是工具与 Android 设备通信的基础，请勿删除或移动。
-
-## 配置文件说明
-
-工具会在运行目录下自动生成 `config.bat` 配置文件，包含以下设置：
-
-```batch
-set "ADB=ADB Files\adb.exe"
-set "DEVICE="
-set "PACKAGE=com.ChillyRoom.DungeonShooter"
-set "BACKUP_ROOT="
-set "SAVE_ID="
-```
-
-- `ADB` - ADB 可执行文件路径
-- `DEVICE` - 设备名称（可通过 `adb devices` 查看）
-- `PACKAGE` - 游戏包名
-- `BACKUP_ROOT` - 备份文件根目录
-- `SAVE_ID` - 存档ID（从备份文件中的文件名获取）
-
-## 技术实现
-
-- **开发语言**：Windows 批处理脚本 (BAT)
-- **运行环境**：Windows 操作系统
-- **依赖工具**：Android Debug Bridge (ADB)
-- **数据格式**：XML 配置文件 + 二进制游戏数据文件
 
 ## 常见问题
 

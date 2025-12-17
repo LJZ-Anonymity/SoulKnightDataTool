@@ -31,12 +31,12 @@ if not exist "%ADB%" (
 
 :menu
 echo %YELLOW%┌───────────────────────────┐%RESET%
-echo %YELLOW%│   1.备份数据              │%RESET%
+echo %YELLOW%│   1.拉取数据              │%RESET%
 echo %YELLOW%│   2.还原数据              │%RESET%
 echo %YELLOW%│   3.设置                  │%RESET%
 echo %YELLOW%│   4.退出                  │%RESET%
 echo %YELLOW%└───────────────────────────┘%RESET%
-echo 当前备份根目录：%GREEN%!BACKUP_ROOT!%RESET%
+echo 当前存储根目录：%GREEN%!BACKUP_ROOT!%RESET%
 echo 当前游戏包名：%GREEN%!PACKAGE!%RESET%
 echo 当前存档ID：%GREEN%!SAVE_ID!%RESET%
 echo 当前设备：%GREEN%%DEVICE%%RESET%
@@ -57,7 +57,7 @@ echo %YELLOW%┌─────────────────────�
 echo %YELLOW%│   1.修改ADB路径           │%RESET%
 echo %YELLOW%│   2.修改设备名            │%RESET%
 echo %YELLOW%│   3.修改游戏包名          │%RESET%
-echo %YELLOW%│   4.修改备份根目录        │%RESET%
+echo %YELLOW%│   4.修改存储根目录        │%RESET%
 echo %YELLOW%│   5.修改存档ID            │%RESET%
 echo %YELLOW%│   6.返回主菜单            │%RESET%
 echo %YELLOW%└───────────────────────────┘%RESET%
@@ -137,19 +137,19 @@ if not defined new_package_name (
 echo.
 goto settingmenu
 
-:: 修改备份根目录
+:: 修改存储根目录
 
 :modifyroot
-echo 当前备份根目录：%GREEN%!BACKUP_ROOT!%RESET%
+echo 当前存储根目录：%GREEN%!BACKUP_ROOT!%RESET%
 set "new_backup_root="
-set /p new_backup_root=请输入新的备份根目录（直接回车保持当前设置）：
+set /p new_backup_root=请输入新的存储根目录（直接回车保持当前设置）：
 if not defined new_backup_root (
-    echo 备份根目录未修改，仍为：%GREEN%!BACKUP_ROOT!%RESET%
+    echo 存储根目录未修改，仍为：%GREEN%!BACKUP_ROOT!%RESET%
 ) else (
     :: 去除前后空格
     for /f "tokens=*" %%a in ("!new_backup_root!") do set "new_backup_root=%%a"
     call :updatecfg BACKUP_ROOT "!new_backup_root!"
-    echo 备份根目录已修改为：%GREEN%!new_backup_root!%RESET%
+    echo 存储根目录已修改为：%GREEN%!new_backup_root!%RESET%
 )
 echo.
 goto settingmenu
@@ -241,12 +241,12 @@ if not defined SAVE_ID (
     if "!SAVE_ID!"=="请输入存档ID" set "NEED_BACKUP_ALL=1"
 )
 
-:: 根据SAVE_ID是否为空选择备份方式
+:: 根据SAVE_ID是否为空选择拉取方式
 if "!NEED_BACKUP_ALL!"=="1" (
-    :: SAVE_ID为空，备份整个files文件夹
+    :: SAVE_ID为空，拉取整个files文件夹
     call :backupfiles
 ) else (
-    :: SAVE_ID已设置，备份指定文件
+    :: SAVE_ID已设置，拉取指定文件
     for %%F in (
         "battles_!SAVE_ID!_.data"
         "item_data_!SAVE_ID!_.data"
@@ -273,7 +273,7 @@ if "!NEED_BACKUP_ALL!"=="1" (
     )
 )
 
-:: 备份shared_prefs目录下的文件
+:: 拉取shared_prefs目录下的文件
 call :backupfile "shared_prefs/%PACKAGE%.v2.playerprefs.xml" "shared_prefs" "%PACKAGE%.v2.playerprefs.xml"
 goto :backupdone
 
@@ -315,7 +315,7 @@ if exist "!FILES_LIST!" (
             set /a FILE_INDEX+=1
             set "TMP_SDCARD=/sdcard/sk_tmp_!FILE_INDEX!"
             
-            echo 正在备份 files/!FILE_NAME! ...
+            echo 正在拉取 files/!FILE_NAME! ...
             :: 复制文件到sdcard
             "%ADB%" -s %DEVICE% shell "su -c 'cp /data/data/%PACKAGE%/files/!FILE_NAME! !TMP_SDCARD!'" >nul 2>&1
             if not errorlevel 1 (
@@ -355,7 +355,7 @@ md "!TARGET_DIR!" 2>nul
 :: 生成唯一的中转文件名
 set /a FILE_INDEX+=1
 set "TMP_SDCARD=/sdcard/sk_tmp_!FILE_INDEX!"
-echo 正在备份 !SOURCE_PATH! ...
+echo 正在拉取 !SOURCE_PATH! ...
 "%ADB%" -s %DEVICE% shell "su -c 'cp /data/data/%PACKAGE%/!SOURCE_PATH! !TMP_SDCARD!'" >nul 2>&1
 if not errorlevel 1 (
     :: 拉取文件
@@ -384,7 +384,7 @@ for %%A in ("!BACKUP_DIR!") do (
 )
 
 :: 修改输出显示
-echo %GREEN%备份完成！%RESET%
+echo %GREEN%拉取完成！%RESET%
 echo 成功：%SUCCESS_COUNT% 个文件，失败：%FAIL_COUNT% 个文件%RESET%
 echo %RESET%文件已保存至：!PARENT_PATH!%GREEN%!FOLDER_NAME!%RESET%
 echo.
@@ -393,12 +393,12 @@ goto menu
 :restore
 call :chk
 
-:: 让用户输入备份文件夹名称
+:: 让用户输入还原文件夹名称
 set /p "FOLDER_NAME=请输入要还原文件所在文件夹的名称："
 echo.
 set "SELECTED=!BACKUP_ROOT!\!FOLDER_NAME!"
 if not exist "!SELECTED!" (
-    echo %RED%备份文件夹不存在：!SELECTED!%RESET%
+    echo %RED%文件夹不存在：!SELECTED!%RESET%
     pause & echo.
     goto menu
 )
@@ -418,7 +418,7 @@ goto :restoredone
 :restorefiles
 set "FILES_SOURCE_DIR=!SELECTED!\files"
 if not exist "!FILES_SOURCE_DIR!" (
-    echo %YELLOW%备份目录中不存在files文件夹，跳过files目录还原%RESET%
+    echo %YELLOW%存储目录中不存在files文件夹，跳过files目录还原%RESET%
     exit /b
 )
 
